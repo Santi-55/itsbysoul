@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Base styles */
+html, body, #root {
+  height: 100%;
+}
+
+/* Tailwind v4 theme extensions */
+@theme {
+  --color-brand-50:  #ffe5e7;
+  --color-brand-100: #fecdd3;
+  --color-brand-200: #fda4af;
+  --color-brand-300: #fb7185;
+  --color-brand-400: #f43f5e;
+  --color-brand-500: #e11d48;
+  --color-brand-600: #b10000;
+  --color-brand-700: #8b0000; /* rojo profundo */
+  --color-brand-800: #660000;
+  --color-brand-900: #3f0000;
+}
+
+body {
+  @apply bg-zinc-950 text-zinc-100 antialiased overflow-x-hidden;
+}
+
+a {
+  @apply text-brand-400 hover:text-brand-300;
+}
+
+/* Prevent double smooth scroll conflicts */
+html { scroll-behavior: auto; }
+
+/* (Cursor custom removido; mantenemos botones magnéticos por data-magnetic) */
