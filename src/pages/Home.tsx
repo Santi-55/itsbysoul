@@ -23,7 +23,7 @@ export default function Home() {
             className="text-5xl sm:text-6xl font-extrabold tracking-tight"
           >
             Fotografía y contenido audiovisual
-            <span className="block text-brand-400">desde Pasto</span>
+            <span className="block text-brand-400">By SOULTRIP</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -31,7 +31,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.15 }}
             className="mt-6 text-lg text-zinc-300 max-w-2xl"
           >
-            Soy Soul (itsbysoul_). Retratos, eventos, moda y producto con estética oscura y contraste profundo.
+            Transformamos ideas en experiencias visuales. A través de fotografía y producción audiovisual, creamos contenido que comunica con fuerza, emoción y coherencia estética. Cada proyecto nace desde una visión creativa que prioriza el detalle, la autenticidad y el impacto visual.
           </motion.p>
           <div className="mt-8 flex gap-3">
             <a href="/portfolio" className="px-5 py-3 rounded-md bg-brand-700 hover:bg-brand-600 text-white transition-transform will-change-transform hover:-translate-y-0.5">Ver portafolio</a>

@@ -33,7 +33,22 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" data-magnetic>
-          <img src="/logonavbar.png" alt="itsbysoul" className="h-20 w-auto" />  
+          <img
+            src="/logonavbar.png"
+            alt="itsbysoul"
+            className="h-20 w-auto"
+            loading="eager"
+            decoding="async"
+            onError={(e) => {
+              const img = e.currentTarget as HTMLImageElement
+              img.style.display = 'none'
+              const fallback = img.nextElementSibling as HTMLElement | null
+              if (fallback) fallback.style.display = 'inline-block'
+            }}
+          />
+          <span style={{ display: 'none' }} className="text-white font-bold tracking-widest text-lg">
+            ITSBY<span className="text-brand-500">SOUL</span>
+          </span>
         </Link>
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">

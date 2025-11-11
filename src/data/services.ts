@@ -11,18 +11,17 @@ export const services: Service[] = [
     key: 'retratos',
     title: 'Retratos',
     short: 'Sesiones individuales o grupales en estudio o exterior.',
-    priceRange: 'Desde $150.000 COP',
+    priceRange: 'Desde $50.000 COP',
     details: [
       'Duración típica: 1–2 horas',
       'Entrega: 10–20 fotos editadas en alta resolución',
-      'Opcional: maquillaje/estilismo (costo adicional)',
     ],
   },
   {
     key: 'eventos',
     title: 'Eventos',
-    short: 'Cobertura para eventos culturales, empresariales y sociales.',
-    priceRange: 'Desde $300.000 COP',
+    short: 'Cobertura para eventos sociales, culturales yempresariales.',
+    priceRange: 'Desde $200.000 COP',
     details: [
       'Cobertura por horas',
       'Galería online para descarga',
@@ -32,8 +31,8 @@ export const services: Service[] = [
   {
     key: 'moda',
     title: 'Moda',
-    short: 'Editoriales y catálogos con estética cuidada.',
-    priceRange: 'Desde $400.000 COP',
+    short: 'Fotografía de moda con enfoque comercial y estético. Ideal para marcas emergentes, catálogos y contenido digital.',
+    priceRange: 'Desde $200.000 COP',
     details: [
       'Preproducción: moodboard y scouting básico',
       'Dirección de arte y poses',
@@ -42,13 +41,13 @@ export const services: Service[] = [
   },
   {
     key: 'producto',
-    title: 'Producto',
-    short: 'Producto para e-commerce y campañas.',
-    priceRange: 'Desde $250.000 COP',
+    title: 'Productos y alimentos',
+    short: 'Fotografía de producto y comida con enfoque visual y cuidado estético.',
+    priceRange: 'Desde $150.000 COP',
     details: [
-      'Set de iluminación controlado',
-      'Fondo neutro o creativo',
-      'Optimización para web y redes',
+      'Control de luz y dirección creativa',
+      'Fondos y estilismo adaptados a la identidad de marca',
+      'Edición profesional lista para campañas y redes',
     ],
   },
   {
