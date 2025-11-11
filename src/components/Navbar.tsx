@@ -29,6 +29,7 @@ export default function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 120, damping: 18 }}
       className="fixed top-0 inset-x-0 z-50 backdrop-blur bg-zinc-950/60 border-b border-zinc-800"
+      data-magnetic-root
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" data-magnetic>
@@ -48,7 +49,7 @@ export default function Navbar() {
           type="button"
           aria-label="Abrir menú"
           onClick={() => setOpen((v) => !v)}
-          className="md:hidden relative h-10 w-10 grid place-items-center rounded-md border border-zinc-800 hover:border-brand-600"
+          className="md:hidden relative h-10 w-10 grid place-items-center rounded-md border border-zinc-800 hover:border-brand-600 bg-zinc-900/60 backdrop-blur shadow-sm"
           data-magnetic
         >
           {/* Animated burger to X */}
@@ -78,9 +79,9 @@ export default function Navbar() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '-100%', opacity: 0 }}
             transition={{ type: 'spring', stiffness: 120, damping: 16 }}
-            className="md:hidden fixed inset-0 z-40 bg-zinc-950/95 backdrop-blur-sm border-b border-zinc-800"
+            className="md:hidden fixed inset-0 z-40 bg-zinc-950 border-b border-zinc-900"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-10">
               <motion.ul
                 initial="hidden"
                 animate="show"
@@ -94,18 +95,22 @@ export default function Navbar() {
                   { to: '/services', label: 'Servicios' },
                   { to: '/contact', label: 'Contacto' },
                 ].map((i) => (
-                  <motion.li key={i.to} variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } }}>
+                  <motion.li key={i.to} variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} whileHover={{ y: -1 }}>
                     <NavLink
                       to={i.to}
                       onClick={() => setOpen(false)}
-                      className={({ isActive }) =>
-                        `block w-full px-4 py-4 rounded-xl ring-1 ${
-                          isActive ? 'ring-brand-600 text-white' : 'ring-zinc-800 text-zinc-300 hover:text-white hover:ring-brand-600'
-                        } bg-zinc-900/40`
-                      }
+                      className={({ isActive }) => {
+                        const base = 'block w-full px-4 py-3 rounded-lg ring-1 text-sm font-medium transition-colors'
+                        const active = 'bg-brand-700 ring-brand-600 text-white'
+                        const idle = 'bg-zinc-900 ring-zinc-700 text-zinc-100 hover:bg-zinc-800 hover:ring-brand-600'
+                        return `${base} ${isActive ? active : idle}`
+                      }}
                       data-magnetic
                     >
-                      <span className="text-lg">{i.label}</span>
+                      <span className="flex items-center justify-between">
+                        <span>{i.label}</span>
+                        <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4 opacity-80"><path fill="currentColor" d="M13.172 12 8.222 7.05l1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
+                      </span>
                     </NavLink>
                   </motion.li>
                 ))}

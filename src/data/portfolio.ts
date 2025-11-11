@@ -16,13 +16,13 @@ export const categories = [
 ] as const
 
 // Auto-descubrimiento de imágenes en src/assets/portfolio/<categoria>/
-// Soporta: jpg, jpeg, png, webp, avif
+// Soporta: jpg, jpeg, png, webp, avif (mayúsculas y minúsculas)
 const globs = {
-  retratos: import.meta.glob('../assets/portfolio/retratos/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' }) as Record<string, string>,
-  eventos: import.meta.glob('../assets/portfolio/eventos/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' }) as Record<string, string>,
-  moda: import.meta.glob('../assets/portfolio/moda/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' }) as Record<string, string>,
-  producto: import.meta.glob('../assets/portfolio/producto/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' }) as Record<string, string>,
-  reels: import.meta.glob('../assets/portfolio/reels/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' }) as Record<string, string>,
+  retratos: import.meta.glob('../assets/portfolio/retratos/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF}', { eager: true, as: 'url' }) as Record<string, string>,
+  eventos: import.meta.glob('../assets/portfolio/eventos/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF}', { eager: true, as: 'url' }) as Record<string, string>,
+  moda: import.meta.glob('../assets/portfolio/moda/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF}', { eager: true, as: 'url' }) as Record<string, string>,
+  producto: import.meta.glob('../assets/portfolio/producto/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF}', { eager: true, as: 'url' }) as Record<string, string>,
+  reels: import.meta.glob('../assets/portfolio/reels/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF}', { eager: true, as: 'url' }) as Record<string, string>,
 }
 
 function ratioClassFromFilename(path: string): string | undefined {
@@ -38,10 +38,10 @@ export function getItems(): PortfolioItem[] {
   const cats = ['retratos','eventos','moda','producto','reels'] as const
   cats.forEach((cat: keyof typeof globs) => {
     const entries = Object.entries(globs[cat])
-    entries.forEach(([path, url], idx) => {
+    entries.forEach(([path, url]) => {
       const file = path.split('/').pop() || ''
       out.push({
-        id: `${cat}-${idx}-${file}`,
+        id: `${cat}-${file}`,
         title: file.replace(/\.[^.]+$/, ''),
         category: cat as 'retratos' | 'eventos' | 'moda' | 'producto' | 'reels',
         src: url as string,
@@ -50,7 +50,7 @@ export function getItems(): PortfolioItem[] {
     })
   })
   // Orden por nombre para estabilidad
-  return out.sort((a, b) => a.id.localeCompare(b.id))
+  return out.sort((a, b) => a.title.localeCompare(b.title))
 }
 
 export const uploadGuide = `

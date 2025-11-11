@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Lightbox from '../components/Lightbox'
 import LazyImage from '../components/LazyImage'
 import { categories, getItems } from '../data/portfolio'
@@ -9,12 +8,18 @@ export default function Portfolio() {
   const [open, setOpen] = useState(false)
   const [currentSrc, setCurrentSrc] = useState<string | undefined>()
   const [currentTitle, setCurrentTitle] = useState<string | undefined>()
+  const galleryRef = useRef<HTMLDivElement>(null)
 
-  const all = useMemo(() => getItems(), [])
+  const all = getItems()
   const data = useMemo(
     () => (active === 'all' ? all : all.filter((i) => i.category === active)),
     [active, all],
   )
+
+  useEffect(() => {
+    // Cierra lightbox; no forzamos scroll para evitar mini saltos
+    setOpen(false)
+  }, [active])
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 pt-16">
@@ -23,7 +28,11 @@ export default function Portfolio() {
           {categories.map((c) => (
             <button
               key={c.key}
-              onClick={() => setActive(c.key as any)}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={(e) => {
+                setActive(c.key as any)
+                ;(e.currentTarget as HTMLButtonElement).blur()
+              }}
               className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${
                 active === c.key
                   ? 'border-brand-600 text-white'
@@ -35,14 +44,12 @@ export default function Portfolio() {
             </button>
           ))}
         </div>
-        <motion.div
-          initial="hidden"
-          animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
-          className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]"
-        >
+        <div ref={galleryRef} className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
+          {data.length === 0 && (
+            <p className="text-zinc-400">No hay imágenes en esta categoría todavía.</p>
+          )}
           {data.map((ph) => (
-            <motion.button
+            <button
               type="button"
               key={ph.id}
               onClick={() => {
@@ -50,13 +57,12 @@ export default function Portfolio() {
                 setCurrentTitle(ph.title)
                 setOpen(true)
               }}
-              variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
-              className="break-inside-avoid mb-4 overflow-hidden rounded-xl ring-1 ring-zinc-800 focus:outline-none focus:ring-2 focus:ring-brand-600"
+              className="block w-full break-inside-avoid mb-4 overflow-hidden rounded-xl ring-1 ring-zinc-800 focus:outline-none focus:ring-2 focus:ring-brand-600 hover:opacity-95 transition"
             >
               <LazyImage src={ph.src} alt={ph.title} className={`${ph.ratio ?? 'aspect-[4/5]'} bg-zinc-900`} />
-            </motion.button>
+            </button>
           ))}
-        </motion.div>
+        </div>
       </div>
       <Lightbox open={open} src={currentSrc} title={currentTitle} onClose={() => setOpen(false)} />
     </div>

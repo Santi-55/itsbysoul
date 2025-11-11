@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import Lenis from 'lenis'
+// Lenis deshabilitado temporalmente por issues de scroll
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -16,20 +16,7 @@ function AppInner() {
   const location = useLocation()
 
   useEffect(() => {
-    const isDesktop = window.matchMedia('(pointer: fine)').matches
-    if (!isDesktop) return
-    const lenis = new Lenis({ lerp: 0.1 })
-    let rafId = 0
-    const raf = (time: number) => {
-      lenis.raf(time)
-      rafId = requestAnimationFrame(raf)
-    }
-    rafId = requestAnimationFrame(raf)
-    return () => {
-      cancelAnimationFrame(rafId)
-      // @ts-ignore
-      lenis.destroy?.()
-    }
+    // Smooth scroll desactivado por ahora
   }, [])
 
   // Magnetic buttons: translate element slightly toward pointer
@@ -38,7 +25,11 @@ function AppInner() {
     if (!isDesktop) return
     let current: HTMLElement | null = null
     const onMove = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('[data-magnetic]') as HTMLElement | null
+      const targetEl = e.target as HTMLElement
+      // Only act if inside a magnetic root (Navbar)
+      const root = targetEl.closest('[data-magnetic-root]')
+      if (!root) return
+      const target = targetEl.closest('[data-magnetic]') as HTMLElement | null
       if (!target) return
       current = target
       const rect = target.getBoundingClientRect()
@@ -49,10 +40,8 @@ function AppInner() {
       target.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
     }
     const onLeave = (e: MouseEvent) => {
-      const t = (e.target as HTMLElement) as HTMLElement
-      if (t?.matches('[data-magnetic]')) {
-        t.style.transform = ''
-      }
+      const t = (e.target as HTMLElement)
+      if (t?.matches('[data-magnetic]')) t.style.transform = ''
     }
     document.addEventListener('mousemove', onMove)
     document.addEventListener('mouseout', onLeave)

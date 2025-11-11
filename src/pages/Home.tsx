@@ -34,8 +34,8 @@ export default function Home() {
             Soy Soul (itsbysoul_). Retratos, eventos, moda y producto con estética oscura y contraste profundo.
           </motion.p>
           <div className="mt-8 flex gap-3">
-            <a href="/portfolio" data-magnetic className="px-5 py-3 rounded-md bg-brand-700 hover:bg-brand-600 text-white">Ver portafolio</a>
-            <a href="/contact" data-magnetic className="px-5 py-3 rounded-md border border-zinc-700 hover:border-brand-600">Agendar</a>
+            <a href="/portfolio" className="px-5 py-3 rounded-md bg-brand-700 hover:bg-brand-600 text-white transition-transform will-change-transform hover:-translate-y-0.5">Ver portafolio</a>
+            <a href="/contact" className="px-5 py-3 rounded-md border border-zinc-700 hover:border-brand-600 transition-transform will-change-transform hover:-translate-y-0.5">Agendar</a>
           </div>
         </div>
       </section>
