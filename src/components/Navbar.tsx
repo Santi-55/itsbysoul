@@ -33,7 +33,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" data-magnetic>
-          <span className="text-white font-bold tracking-widest text-lg">ITSBY<span className="text-brand-500">SOUL</span></span>
+          <img src="/src/assets/logo nav bar.png" alt="itsbysoul" className="h-25 w-auto" />  
         </Link>
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">

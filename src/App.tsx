@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
-import Portfolio from './pages/Portfolio'
+import Portafolio from './pages/Portfolio'
 import About from './pages/About'
 import Services from './pages/Services'
 import Contact from './pages/Contact'
@@ -75,7 +75,7 @@ function AppInner() {
         <AnimatePresence mode="wait">
           <Routes location={location}>
             <Route path="/" element={<Page><Home /></Page>} />
-            <Route path="/portfolio" element={<Page><Portfolio /></Page>} />
+            <Route path="/portfolio" element={<Page><Portafolio /></Page>} />
             <Route path="/about" element={<Page><About /></Page>} />
             <Route path="/services" element={<Page><Services /></Page>} />
             <Route path="/services/:key" element={<Page><ServiceDetail /></Page>} />
