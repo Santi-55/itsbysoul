@@ -5,8 +5,24 @@ const { put } = require('@netlify/blobs')
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' }
   const ct = event.headers['content-type'] || event.headers['Content-Type']
+  
+  // JSON path: { category, filename, contentType, data (base64) }
+  if (ct && ct.includes('application/json')) {
+    try {
+      const raw = event.isBase64Encoded ? Buffer.from(event.body || '', 'base64').toString('utf8') : (event.body || '')
+      const { category = 'retratos', filename, contentType = 'application/octet-stream', data } = JSON.parse(raw || '{}')
+      if (!filename || !data) return { statusCode: 400, body: 'Missing filename or data' }
+      const key = `portfolio/${category}/${filename}`
+      const buf = Buffer.from(data, 'base64')
+      await put(key, buf, { contentType })
+      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ok: true, key, category, fileName: filename }) }
+    } catch (e) {
+      return { statusCode: 500, body: e?.message || 'Upload JSON error' }
+    }
+  }
+
   if (!ct || !ct.startsWith('multipart/form-data')) {
-    return { statusCode: 400, body: 'Expected multipart/form-data' }
+    return { statusCode: 400, body: 'Expected multipart/form-data or application/json' }
   }
   try {
     const boundary = ct.split('boundary=')[1]

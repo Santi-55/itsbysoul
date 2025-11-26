@@ -24,7 +24,7 @@ export default function AdminUpload() {
   const [mode, setMode] = useState<'netlify' | 'github' | 'cloudinary'>('netlify')
   const [ghToken, setGhToken] = useState('')
   const [ghRepo, setGhRepo] = useState('') // owner/repo
-  const [listing, setListing] = useState<{ name: string; path: string; sha: string }[]>([])
+  const [listing, setListing] = useState<{ name: string; path?: string; sha?: string; key?: string }[]>([])
   const [loadingList, setLoadingList] = useState(false)
 
   const canUpload = useMemo(() => {
@@ -39,7 +39,42 @@ export default function AdminUpload() {
     setFiles(Array.from(fl))
   }
 
+  const deleteNetlifyFile = async (item: { key?: string; name: string }) => {
+    try {
+      if (!item.key) throw new Error('Falta key')
+      const res = await fetch('/.netlify/functions/delete-blob', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: item.key }),
+      })
+      const j = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(j?.message || 'Error al eliminar')
+      appendLog(`✓ Eliminado (Netlify): ${item.name}`)
+      refreshNetlifyList()
+    } catch (e: any) {
+      appendLog(`✖ Eliminar Netlify: ${e?.message || 'Error'}`)
+    }
+  }
+
   const appendLog = (s: string) => setLog((l) => [s, ...l].slice(0, 200))
+
+  const refreshNetlifyList = async () => {
+    try {
+      setLoadingList(true)
+      const res = await fetch('/.netlify/functions/list-blob')
+      if (!res.ok) throw new Error('No se pudo listar Blobs')
+      const j = await res.json()
+      const items = Array.isArray(j?.items) ? j.items : []
+      const files = items
+        .filter((x: any) => x.category === category)
+        .map((x: any) => ({ name: x.title || (x.id?.split('/').pop() || ''), key: x.id }))
+      setListing(files)
+    } catch (e: any) {
+      appendLog(`✖ Listado Netlify: ${e?.message || 'Error'}`)
+    } finally {
+      setLoadingList(false)
+    }
+  }
 
   const refreshGithubList = async () => {
     if (!ghToken || !ghRepo) return
@@ -66,6 +101,7 @@ export default function AdminUpload() {
   // Auto refresh when switching category in GitHub mode
   useEffect(() => {
     if (mode === 'github' && ghToken && ghRepo) refreshGithubList()
+    if (mode === 'netlify') refreshNetlifyList()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, ghToken, ghRepo, category])
 
@@ -91,12 +127,24 @@ export default function AdminUpload() {
     setBusy(true)
     try {
       if (mode === 'netlify') {
-        // Subida a Netlify Blobs (sin cuentas externas)
+        // Subida a Netlify Blobs (JSON base64 para máxima compatibilidad)
+        const toBase64 = (f: File) => new Promise<string>((res, rej) => {
+          const r = new FileReader()
+          r.onload = () => {
+            const s = String(r.result || '')
+            const comma = s.indexOf(',')
+            res(comma >= 0 ? s.slice(comma + 1) : s)
+          }
+          r.onerror = () => rej(r.error)
+          r.readAsDataURL(f)
+        })
         for (const file of files) {
-          const fd = new FormData()
-          fd.append('category', category)
-          fd.append('file', file, file.name)
-          const up = await fetch('/.netlify/functions/upload-blob', { method: 'POST', body: fd })
+          const b64 = await toBase64(file)
+          const up = await fetch('/.netlify/functions/upload-blob', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category, filename: file.name, contentType: file.type || 'application/octet-stream', data: b64 }),
+          })
           const j = await up.json().catch(() => ({}))
           if (!up.ok) throw new Error(j?.message || 'Fallo subiendo a Netlify Blobs')
           appendLog(`OK Netlify: ${file.name}`)
@@ -270,23 +318,32 @@ export default function AdminUpload() {
             <a href="/portfolio" className="text-sm text-zinc-400 hover:text-zinc-200">Ver Portafolio</a>
           </div>
 
-          {mode === 'github' && (
+          {(mode === 'github' || mode === 'netlify') && (
             <div className="mt-8 border border-zinc-800 rounded-md p-4 bg-zinc-900/40">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Galería en {`src/assets/portfolio/${category}`}</h3>
-                <button onClick={refreshGithubList} className="text-sm px-3 py-1.5 rounded-md border border-zinc-700 hover:border-brand-600">
-                  {loadingList ? 'Actualizando…' : 'Actualizar'}
-                </button>
+                <h3 className="font-semibold">Galería en {mode==='github' ? `src/assets/portfolio/${category}` : `Netlify Blobs / ${category}`}</h3>
+                {mode==='github' ? (
+                  <button onClick={refreshGithubList} className="text-sm px-3 py-1.5 rounded-md border border-zinc-700 hover:border-brand-600">
+                    {loadingList ? 'Actualizando…' : 'Actualizar'}
+                  </button>
+                ) : (
+                  <button onClick={refreshNetlifyList} className="text-sm px-3 py-1.5 rounded-md border border-zinc-700 hover:border-brand-600">
+                    {loadingList ? 'Actualizando…' : 'Actualizar'}
+                  </button>
+                )}
               </div>
-              <ul className="mt-3 divide-y divide-zinc-800">
-                {listing.length === 0 && <li className="py-3 text-sm text-zinc-400">No hay imágenes aún.</li>}
-                {listing.map((it) => (
-                  <li key={it.sha} className="py-3 flex items-center justify-between text-sm">
-                    <span className="truncate mr-4">{it.name}</span>
-                    <button onClick={() => deleteGithubFile(it)} className="px-3 py-1.5 rounded-md border border-red-700 text-red-300 hover:bg-red-800/20">Eliminar</button>
-                  </li>
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                {listing.map((it, idx) => (
+                  <div key={(it.path || it.key || it.name) + idx} className="flex items-center justify-between gap-3 rounded-md border border-zinc-800 px-3 py-2 bg-zinc-900/30">
+                    <span className="truncate">{it.name}</span>
+                    {mode==='github' ? (
+                      <button onClick={() => deleteGithubFile(it as any)} className="text-red-400 hover:text-red-300">Eliminar</button>
+                    ) : (
+                      <button onClick={() => deleteNetlifyFile(it as any)} className="text-red-400 hover:text-red-300">Eliminar</button>
+                    )}
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
 
