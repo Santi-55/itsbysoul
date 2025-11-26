@@ -1,8 +1,8 @@
-import type { Handler } from '@netlify/functions'
-import { get } from '@netlify/blobs'
+// JS-compatible Netlify Function (no type imports)
+const { get } = require('@netlify/blobs')
 
 // Serves a blob by key: /.netlify/functions/get-blob?key=portfolio/<category>/<filename>
-export const handler: Handler = async (event) => {
+exports.handler = async (event: any) => {
   if (event.httpMethod !== 'GET') return { statusCode: 405, body: 'Method Not Allowed' }
   const key = event.queryStringParameters?.key
   if (!key) return { statusCode: 400, body: 'Missing key' }
