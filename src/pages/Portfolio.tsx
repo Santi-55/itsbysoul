@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Lightbox from '../components/Lightbox'
 import LazyImage from '../components/LazyImage'
-import { categories, getItems } from '../data/portfolio'
+import { categories, getItems, fetchCloudItems, fetchBlobItems } from '../data/portfolio'
 
 export default function Portfolio() {
   const [active, setActive] = useState<(typeof categories)[number]['key']>('all')
@@ -9,8 +9,26 @@ export default function Portfolio() {
   const [currentSrc, setCurrentSrc] = useState<string | undefined>()
   const [currentTitle, setCurrentTitle] = useState<string | undefined>()
   const galleryRef = useRef<HTMLDivElement>(null)
+  const [all, setAll] = useState(() => getItems())
 
-  const all = getItems()
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      // 1) Netlify Blobs
+      const blobs = await fetchBlobItems()
+      if (mounted && blobs.length > 0) {
+        setAll(blobs)
+        return
+      }
+      // 2) Cloudinary
+      const cloud = await fetchCloudItems()
+      if (mounted && cloud.length > 0) setAll(cloud)
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
   const data = useMemo(
     () => (active === 'all' ? all : all.filter((i) => i.category === active)),
     [active, all],

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const [servicesOpen, setServicesOpen] = useState(false)
 
   useEffect(() => {
     if (open) document.body.style.overflow = 'hidden'
@@ -55,7 +56,34 @@ export default function Navbar() {
           {navItem({ to: '/', label: 'Home' })}
           {navItem({ to: '/portfolio', label: 'Portafolio' })}
           {navItem({ to: '/about', label: 'Sobre mí' })}
-          {navItem({ to: '/services', label: 'Servicios' })}
+          <div
+            className="relative"
+            onMouseEnter={() => setServicesOpen(true)}
+            onMouseLeave={() => setServicesOpen(false)}
+            onFocus={() => setServicesOpen(true)}
+            onBlur={(e) => {
+              const current = e.currentTarget
+              // close only if focus moves outside the container
+              if (!current.contains(e.relatedTarget as Node)) setServicesOpen(false)
+            }}
+          >
+            <button
+              className="px-3 py-2 rounded-md text-sm font-medium text-zinc-300 hover:text-brand-400"
+              aria-haspopup="true"
+              aria-expanded={servicesOpen}
+              onClick={() => setServicesOpen((v) => !v)}
+            >
+              Servicios
+            </button>
+            {servicesOpen && (
+              <div className="absolute left-0 top-full z-50">
+                <div className="min-w-[220px] rounded-xl border border-zinc-800 bg-zinc-900/95 backdrop-blur p-2 shadow-lg pointer-events-auto">
+                  <a href="/fotografia" className="block px-3 py-2 rounded-md text-sm text-zinc-200 hover:bg-zinc-800" data-magnetic>Fotografía</a>
+                  <a href="/marketing" className="block px-3 py-2 rounded-md text-sm text-zinc-200 hover:bg-zinc-800" data-magnetic>Marketing</a>
+                </div>
+              </div>
+            )}
+          </div>
           {navItem({ to: '/contact', label: 'Contacto' })}
         </nav>
 
@@ -107,7 +135,8 @@ export default function Navbar() {
                   { to: '/', label: 'Home' },
                   { to: '/portfolio', label: 'Portafolio' },
                   { to: '/about', label: 'Sobre mí' },
-                  { to: '/services', label: 'Servicios' },
+                  { to: '/services', label: 'Fotografía' },
+                  { to: '/marketing', label: 'Marketing' },
                   { to: '/contact', label: 'Contacto' },
                 ].map((i) => (
                   <motion.li key={i.to} variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} whileHover={{ y: -1 }}>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 // Lenis deshabilitado temporalmente por issues de scroll
 
@@ -11,6 +11,8 @@ import About from './pages/About'
 import Services from './pages/Services'
 import Contact from './pages/Contact'
 import ServiceDetail from './pages/ServiceDetail'
+import AdminUpload from './pages/AdminUpload'
+import Marketing from './pages/Marketing'
 
 function AppInner() {
   const location = useLocation()
@@ -77,9 +79,12 @@ function AppInner() {
             <Route path="/" element={<Page><Home /></Page>} />
             <Route path="/portfolio" element={<Page><Portafolio /></Page>} />
             <Route path="/about" element={<Page><About /></Page>} />
-            <Route path="/services" element={<Page><Services /></Page>} />
+            <Route path="/fotografia" element={<Page><Services /></Page>} />
+            <Route path="/services" element={<Navigate to="/fotografia" replace />} />
+            <Route path="/marketing" element={<Page><Marketing /></Page>} />
             <Route path="/services/:key" element={<Page><ServiceDetail /></Page>} />
             <Route path="/contact" element={<Page><Contact /></Page>} />
+            <Route path="/_admin" element={<Page><AdminUpload /></Page>} />
           </Routes>
         </AnimatePresence>
       </div>
